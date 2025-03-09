@@ -3,24 +3,34 @@ project("Athena OpenGL Engine")
 
 set(CMAKE_CXX_STANDARD 17)
 
-set(SOURCE_FILES
-    src/Main.cpp
-)
-
-set(HEADER_FILES
-
-)
+# External libraries
+add_subdirectory(external/fmt)
 
 # Create executable
-add_executable(Athena
-    ${SOURCE_FILES}
-    ${HEADER_FILES}
+file(GLOB_RECURSE SOURCE_FILES
+    "src/*.h"
+    "src/*.cpp"
+)
+add_executable(Athena ${SOURCE_FILES})
+
+# Link libraries
+target_link_libraries(Athena PRIVATE
+    fmt::fmt
 )
 
 # Include directories
 target_include_directories(Athena PRIVATE
     src/
 )
+
+# Check the build type and set preprocessor definitions
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    message(STATUS "Building in Debug mode")
+    target_compile_definitions(Athena PRIVATE DEBUG ATH_ENABLE_ASSERTS)
+elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    message(STATUS "Building in Release mode")
+    target_compile_definitions(Athena PRIVATE RELEASE)
+endif()
 
 # Copy 'assets' folder to output folder
 add_custom_target(copy_assets_folder ALL
