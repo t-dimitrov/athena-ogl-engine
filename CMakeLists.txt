@@ -5,6 +5,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 # External libraries
 add_subdirectory(external/fmt)
+add_subdirectory(external/glad)
+add_subdirectory(external/glfw)
 
 # Create executable
 file(GLOB_RECURSE SOURCE_FILES
@@ -16,6 +18,8 @@ add_executable(Athena ${SOURCE_FILES})
 # Link libraries
 target_link_libraries(Athena PRIVATE
     fmt::fmt
+    glad
+    glfw
 )
 
 # Include directories
