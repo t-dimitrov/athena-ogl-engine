@@ -1,6 +1,7 @@
 #pragma once
-#include "Core/Window.h"
 #include "Ref.h"
+#include "Core/Window.h"
+#include "Renderer/Renderer.h"
 
 namespace Athena
 {
@@ -16,5 +17,7 @@ namespace Athena
     private:
         Ref<Window> _window;
         bool _isRunning = true;
+
+        Ref<Renderer> _renderer;
     };
 }

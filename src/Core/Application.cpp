@@ -2,8 +2,6 @@
 
 #include "Event/KeyEvents.h"
 
-#include <glad/glad.h>
-
 namespace Athena
 {
     Application::Application()
@@ -18,11 +16,14 @@ namespace Athena
         };
         _window = Ref<Window>::Create(desc);
         _window->BindEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
+
+        _renderer = Ref<Renderer>::Create();
+        _renderer->Init();
     }
 
     Application::~Application()
     {
-
+        _renderer->Shutdown();
     }
 
     void Application::Run()
@@ -31,8 +32,7 @@ namespace Athena
         {
             _window->PollEvents();
 
-            glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);
+            _renderer->Render();
 
             _window->Present();
         }
