@@ -87,7 +87,7 @@ namespace Athena
         return program;
     }
 
-    void Shader::Bind()
+    void Shader::Bind() const
     {
         glUseProgram(_programId);
     }

@@ -1,6 +1,9 @@
 #pragma once
 #include "Core/Ref.h"
 #include "Shader.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexArray.h"
 
 namespace Athena
 {
@@ -16,10 +19,9 @@ namespace Athena
         void Render();
 
     private:
-        unsigned int _vao;
-        unsigned int _vbo;
-        unsigned int _ibo;
-
         Ref<Shader> _shader;
+        Ref<VertexArray> _vertexArray;
+        Ref<VertexBuffer> _vertexBuffer;
+        Ref<IndexBuffer> _indexBuffer;
     };
 }

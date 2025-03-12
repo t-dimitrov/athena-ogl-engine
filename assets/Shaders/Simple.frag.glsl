@@ -1,9 +1,13 @@
 #version 460 core
 out vec4 FragColor;
 
-uniform vec4 uColor;
+struct Vertex
+{
+    vec4 color;
+};
+in Vertex vertex;
 
 void main()
 {
-    FragColor = uColor;
+    FragColor = vertex.color;
 }

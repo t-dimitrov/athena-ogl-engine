@@ -13,7 +13,7 @@ namespace Athena
         Shader(const std::string& vertexSrcFile, const std::string& fragmentSrcFile);
         ~Shader();
 
-        void Bind();
+        void Bind() const;
 
         void SetUniformFloat(const std::string& name, float value);
         void SetUniformFloat2(const std::string& name, const glm::vec2& value);
