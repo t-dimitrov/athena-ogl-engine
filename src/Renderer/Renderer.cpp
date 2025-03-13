@@ -2,10 +2,12 @@
 #include "Core/Log.h"
 
 #include <glad/glad.h>
+#include "imgui.h"
 
 namespace Athena
 {
     Renderer::Renderer()
+        : _clearColor(0.1f, 0.1f, 0.1f, 1.0f)
     {
     }
 
@@ -47,7 +49,7 @@ namespace Athena
 
     void Renderer::Render()
     {
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
         glClear(GL_COLOR_BUFFER_BIT);
 
         _shader->Bind();
@@ -55,5 +57,12 @@ namespace Athena
 
         glDrawElements(GL_TRIANGLES, _indexBuffer->GetElementCount(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
+    }
+
+    void Renderer::OnImGuiRender()
+    {
+        ImGui::Begin("Renderer");
+        ImGui::ColorEdit4("Clear Color", &_clearColor.r);
+        ImGui::End();
     }
 }

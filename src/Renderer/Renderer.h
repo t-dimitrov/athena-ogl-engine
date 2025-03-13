@@ -18,7 +18,11 @@ namespace Athena
 
         void Render();
 
+        void OnImGuiRender();
+
     private:
+        glm::vec4 _clearColor;
+
         Ref<Shader> _shader;
         Ref<VertexArray> _vertexArray;
         Ref<VertexBuffer> _vertexBuffer;

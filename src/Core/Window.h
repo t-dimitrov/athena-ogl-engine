@@ -1,12 +1,14 @@
 #pragma once
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
 #include "Ref.h"
 #include "Event/Event.h"
+#include "ImGui/ImGuiRenderer.h"
 
 #include <functional>
 #include <string>
 
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 
 namespace Athena
 {
@@ -33,6 +35,9 @@ namespace Athena
 		void PollEvents();
 		void Present();
 
+		void OnImGuiBeginFrame() const;
+		void OnImGuiEndFrame() const;
+
 		uint32_t GetWidth() const { return _descriptor.width; }
 		uint32_t GetHeight() const { return _descriptor.height; }
 
@@ -46,6 +51,7 @@ namespace Athena
 	private:
 		WindowDescriptor _descriptor;
 		GLFWwindow* _windowHandle;
+		Ref<ImGuiRenderer> _imguiRenderer;
 
 		EventCallbackFunc _eventCallbackFunc;
 	};

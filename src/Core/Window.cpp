@@ -148,10 +148,14 @@ namespace Athena
 		{
 			LOG_ERROR("Failed to load GL loader ({})", result);
 		}
+
+		_imguiRenderer = Ref<ImGuiRenderer>::Create();
+		_imguiRenderer->Init(_windowHandle);
 	}
 
 	Window::~Window()
 	{
+		_imguiRenderer->Shutdown();
 		glfwDestroyWindow(_windowHandle);
 		glfwTerminate();
 	}
@@ -164,6 +168,16 @@ namespace Athena
 	void Window::Present()
 	{
 		glfwSwapBuffers(_windowHandle);
+	}
+
+	void Window::OnImGuiBeginFrame() const
+	{
+		_imguiRenderer->BeginFrame();
+	}
+
+	void Window::OnImGuiEndFrame() const
+	{
+		_imguiRenderer->EndFrame(_windowHandle);
 	}
 
 	void Window::UpdateWindowSize()

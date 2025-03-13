@@ -34,6 +34,10 @@ namespace Athena
 
             _renderer->Render();
 
+            _window->OnImGuiBeginFrame();
+            _renderer->OnImGuiRender();
+            _window->OnImGuiEndFrame();
+
             _window->Present();
         }
     }
