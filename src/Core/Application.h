@@ -14,10 +14,18 @@ namespace Athena
         void Run();
         void OnEvent(Event& e);
 
+        inline Ref<Window> GetWindow() const { return _window; }
+
+        static Application& Instance() { return *s_application; }
+
     private:
         Ref<Window> _window;
         bool _isRunning = true;
 
+        Ref<EditorCamera> _editorCamera;
         Ref<Renderer> _renderer;
+
+    private:
+        static Application* s_application;
     };
 }

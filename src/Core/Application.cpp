@@ -4,8 +4,12 @@
 
 namespace Athena
 {
+    Application* Application::s_application = nullptr;
+
     Application::Application()
     {
+        s_application = this;
+
         WindowDescriptor desc = {
             "Athena Window",
             1600,
@@ -17,6 +21,9 @@ namespace Athena
         _window = Ref<Window>::Create(desc);
         _window->BindEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 
+        _editorCamera = Ref<EditorCamera>::Create();
+        _editorCamera->SetPerspective(45.0f, desc.width, desc.height, 0.01f, 1000.0f);
+
         _renderer = Ref<Renderer>::Create();
         _renderer->Init();
     }
@@ -24,6 +31,7 @@ namespace Athena
     Application::~Application()
     {
         _renderer->Shutdown();
+        s_application = nullptr;
     }
 
     void Application::Run()
@@ -32,12 +40,17 @@ namespace Athena
         {
             _window->PollEvents();
 
-            _renderer->Render();
+            _editorCamera->OnUpdate(1.0f);
 
+            _renderer->BeginFrame(_editorCamera);
+            
             _window->OnImGuiBeginFrame();
+            _editorCamera->OnImGuiRender();
+            
             _renderer->OnImGuiRender();
-            _window->OnImGuiEndFrame();
+            _renderer->EndFrame();
 
+            _window->OnImGuiEndFrame();
             _window->Present();
         }
     }
@@ -57,5 +70,7 @@ namespace Athena
                 _isRunning = false;
             }
         }
+
+        _editorCamera->OnEvent(e);
     }
 }

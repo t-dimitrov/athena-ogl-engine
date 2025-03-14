@@ -1,5 +1,7 @@
 #pragma once
 #include "Core/Ref.h"
+#include "Camera/EditorCamera.h"
+
 #include "Shader.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
@@ -16,7 +18,8 @@ namespace Athena
         void Init();
         void Shutdown();
 
-        void Render();
+        void BeginFrame(const Ref<EditorCamera>& camera);
+        void EndFrame();
 
         void OnImGuiRender();
 

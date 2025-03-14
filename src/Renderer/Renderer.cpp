@@ -21,16 +21,16 @@ namespace Athena
         _vertexArray->Bind();
 
         float vertices[] = {
-             0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 0.0f, 1.0f, // top right
-             0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f, 1.0f, // bottom right
-            -0.5f, -0.5f, 0.0f,   1.0f, 0.0f, 0.0f, 1.0f, // bottom left
-            -0.5f,  0.5f, 0.0f,   0.0f, 0.0f, 1.0f, 1.0f, // top left 
+             0.5f,  0.5f, -5.0f,   0.0f, 0.0f, 0.0f, 1.0f, // top right
+             0.5f, -0.5f, -5.0f,   0.0f, 1.0f, 0.0f, 1.0f, // bottom right
+            -0.5f, -0.5f, -5.0f,   1.0f, 0.0f, 0.0f, 1.0f, // bottom left
+            -0.5f,  0.5f, -5.0f,   0.0f, 0.0f, 1.0f, 1.0f, // top left 
         };
         uint32_t vertexBytes = sizeof(vertices);
         _vertexBuffer = Ref<VertexBuffer>::Create(vertices, vertexBytes);
         _vertexBuffer->SetLayout({
-            { ShaderDataType::Float3, "a_Position" },
-            { ShaderDataType::Float4, "a_Color" },
+            { ShaderDataType::Float3, "a_position" },
+            { ShaderDataType::Float4, "a_color" },
         });
 
         uint32_t indices[] = {  // note that we start from 0!
@@ -47,13 +47,19 @@ namespace Athena
     {
     }
 
-    void Renderer::Render()
+    void Renderer::BeginFrame(const Ref<EditorCamera>& camera)
     {
         glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
         glClear(GL_COLOR_BUFFER_BIT);
-
+     
         _shader->Bind();
+        _shader->SetUniformMat4("u_projection", camera->GetProjection());
+        _shader->SetUniformMat4("u_view", camera->GetView());
         _vertexArray->Bind();
+    }
+
+    void Renderer::EndFrame()
+    {
 
         glDrawElements(GL_TRIANGLES, _indexBuffer->GetElementCount(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
