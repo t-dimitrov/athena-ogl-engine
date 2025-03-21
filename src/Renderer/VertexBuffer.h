@@ -144,7 +144,8 @@ namespace Athena
     class VertexBuffer : public RefCounted
     {
     public:
-        VertexBuffer(void* data, uint32_t byteSize);
+		VertexBuffer(void* data, uint32_t byteSize);
+		VertexBuffer(const void* data, uint32_t byteSize);
         ~VertexBuffer();
 
         void Bind() const;

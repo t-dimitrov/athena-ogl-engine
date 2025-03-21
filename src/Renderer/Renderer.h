@@ -2,10 +2,16 @@
 #include "Core/Ref.h"
 #include "Camera/EditorCamera.h"
 
+#include "MaterialLibrary.h"
+#include "TextureLibrary.h"
 #include "Shader.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
+#include "Texture2D.h"
+#include "Scene/Model.h"
+
+#include <glm/glm.hpp>
 
 namespace Athena
 {
@@ -26,9 +32,16 @@ namespace Athena
     private:
         glm::vec4 _clearColor;
 
+        Ref<MaterialLibrary> _materialLibrary;
+        Ref<TextureLibrary> _textureLibrary;
+
+        glm::vec3 _modelPosition = glm::vec3{ 0.0f };
+        glm::vec3 _modelRotation = glm::vec3{ 0.0f };
+        glm::vec3 _modelScale = glm::vec3{ 1.0f };
+        Ref<Model> _model;
         Ref<Shader> _shader;
-        Ref<VertexArray> _vertexArray;
-        Ref<VertexBuffer> _vertexBuffer;
-        Ref<IndexBuffer> _indexBuffer;
+
+        glm::vec3 _lightPosition = { -1.0f, -1.0f, -1.0f };
+        glm::vec3 _lightColor = { 1.0f, 1.0f, 1.0f };
     };
 }

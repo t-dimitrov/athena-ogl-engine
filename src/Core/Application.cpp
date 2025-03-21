@@ -22,7 +22,7 @@ namespace Athena
         _window->BindEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 
         _editorCamera = Ref<EditorCamera>::Create();
-        _editorCamera->SetPerspective(45.0f, desc.width, desc.height, 0.01f, 1000.0f);
+        _editorCamera->SetPerspective(45.0f, static_cast<float>(desc.width), static_cast<float>(desc.height), 0.1f, 1000.0f);
 
         _renderer = Ref<Renderer>::Create();
         _renderer->Init();

@@ -35,8 +35,8 @@ namespace Athena
 		void PollEvents();
 		void Present();
 
-		void OnImGuiBeginFrame() const;
-		void OnImGuiEndFrame() const;
+		void OnImGuiBeginFrame();
+		void OnImGuiEndFrame();
 
 		uint32_t GetWidth() const { return _descriptor.width; }
 		uint32_t GetHeight() const { return _descriptor.height; }
@@ -52,6 +52,7 @@ namespace Athena
 		WindowDescriptor _descriptor;
 		GLFWwindow* _windowHandle;
 		Ref<ImGuiRenderer> _imguiRenderer;
+		bool _showImGuiDemo;
 
 		EventCallbackFunc _eventCallbackFunc;
 	};

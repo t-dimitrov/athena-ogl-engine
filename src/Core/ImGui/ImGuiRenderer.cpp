@@ -40,15 +40,12 @@ namespace Athena
         ImGui::DestroyContext();
     }
 
-    void ImGuiRenderer::BeginFrame(bool showDemo) const
+    void ImGuiRenderer::BeginFrame() const
     {
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-
-        if (showDemo)
-            ImGui::ShowDemoWindow(&showDemo);
     }
 
     void ImGuiRenderer::EndFrame(GLFWwindow* window) const

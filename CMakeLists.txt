@@ -27,12 +27,20 @@ set(ImGuiSource
     "external/imgui/backends/imgui_impl_opengl3.cpp"
 )
 
+set(tinygltfSource
+    "external/tinygltf/stb_image.h"
+    "external/tinygltf/stb_image_write.h"
+    "external/tinygltf/json.hpp"
+    "external/tinygltf/tiny_gltf.h"
+    "external/tinygltf/tiny_gltf.cc"
+)
+
 # Create executable
 file(GLOB_RECURSE SOURCE_FILES
     "src/*.h"
     "src/*.cpp"
 )
-add_executable(Athena ${SOURCE_FILES} ${ImGuiSource})
+add_executable(Athena ${SOURCE_FILES} ${ImGuiSource} ${tinygltfSource})
 
 # Link libraries
 target_link_libraries(Athena PRIVATE
@@ -46,6 +54,7 @@ target_link_libraries(Athena PRIVATE
 target_include_directories(Athena PRIVATE
     "src/"
     "external/imgui"
+    "external/tinygltf"
 )
 
 # Check the build type and set preprocessor definitions
@@ -60,8 +69,8 @@ endif()
 # Copy 'assets' folder to output folder
 add_custom_target(copy_assets_folder ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${PROJECT_SOURCE_DIR}/assets
-    ${PROJECT_BINARY_DIR}/assets
+    ${PROJECT_SOURCE_DIR}/assets/
+    ${PROJECT_BINARY_DIR}/assets/
     COMMENT "Copying 'assets' folder into binary directory"
 )
 

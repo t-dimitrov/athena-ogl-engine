@@ -6,6 +6,8 @@
 #include "Event/MouseEvents.h"
 #include "Event/WindowEvents.h"
 
+#include "imgui.h"
+
 namespace Athena
 {
 	void GLFWErrorCallback(int code, const char* description)
@@ -15,6 +17,7 @@ namespace Athena
 
 	Window::Window(const WindowDescriptor& desc)
 		: _descriptor(desc)
+		, _showImGuiDemo(false)
 	{
 		bool isGlfwInitialized = glfwInit();
 		ATH_ASSERT(isGlfwInitialized, "GLFW failed to initialize")
@@ -170,12 +173,20 @@ namespace Athena
 		glfwSwapBuffers(_windowHandle);
 	}
 
-	void Window::OnImGuiBeginFrame() const
+	void Window::OnImGuiBeginFrame()
 	{
 		_imguiRenderer->BeginFrame();
+
+		ImGui::Begin("Window Settings");
+
+		ImGui::Checkbox("Show demo window", &_showImGuiDemo);
+		if (_showImGuiDemo)
+			ImGui::ShowDemoWindow(&_showImGuiDemo);
+
+		ImGui::End();
 	}
 
-	void Window::OnImGuiEndFrame() const
+	void Window::OnImGuiEndFrame()
 	{
 		_imguiRenderer->EndFrame(_windowHandle);
 	}

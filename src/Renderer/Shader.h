@@ -15,17 +15,17 @@ namespace Athena
 
         void Bind() const;
 
-        void SetUniformFloat(const std::string& name, float value);
-        void SetUniformFloat2(const std::string& name, const glm::vec2& value);
-        void SetUniformFloat3(const std::string& name, const glm::vec3& value);
-        void SetUniformFloat4(const std::string& name, const glm::vec4& value);
+        void SetUniformFloat(const std::string& name, float value) const;
+        void SetUniformFloat2(const std::string& name, const glm::vec2& value) const;
+        void SetUniformFloat3(const std::string& name, const glm::vec3& value) const;
+        void SetUniformFloat4(const std::string& name, const glm::vec4& value) const;
         
-        void SetUniformInt(const std::string& name, int value);
-        void SetUniformInt2(const std::string& name, const glm::vec2& value);
-        void SetUniformInt3(const std::string& name, const glm::vec3& value);
-        void SetUniformInt4(const std::string& name, const glm::vec4& value);
+        void SetUniformInt(const std::string& name, int value) const;
+        void SetUniformInt2(const std::string& name, const glm::vec2& value) const;
+        void SetUniformInt3(const std::string& name, const glm::vec3& value) const;
+        void SetUniformInt4(const std::string& name, const glm::vec4& value) const;
         
-        void SetUniformMat4(const std::string& name, const glm::mat4& value);
+        void SetUniformMat4(const std::string& name, const glm::mat4& value) const;
     
     private:
         std::string ReadSourceFile(const std::string& filename);

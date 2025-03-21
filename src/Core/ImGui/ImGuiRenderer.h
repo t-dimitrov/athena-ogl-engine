@@ -15,7 +15,7 @@ namespace Athena
         void Init(GLFWwindow* window);
         void Shutdown();
 
-        void BeginFrame(bool showDemo = false) const;
+        void BeginFrame() const;
         void EndFrame(GLFWwindow* window) const;
     };
 }

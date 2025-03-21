@@ -10,6 +10,13 @@ namespace Athena
         glBufferData(GL_ARRAY_BUFFER, byteSize, data, GL_STATIC_DRAW);
     }
 
+    VertexBuffer::VertexBuffer(const void* data, uint32_t byteSize)
+    {
+        glGenBuffers(1, &_bufferId);
+        glBindBuffer(GL_ARRAY_BUFFER, _bufferId);
+        glBufferData(GL_ARRAY_BUFFER, byteSize, data, GL_STATIC_DRAW);
+    }
+
     VertexBuffer::~VertexBuffer()
     {
         glDeleteBuffers(1, &_bufferId);

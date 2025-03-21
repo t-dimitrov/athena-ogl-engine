@@ -7,6 +7,7 @@ namespace Athena
     {
     public:
         IndexBuffer(uint32_t* data, uint32_t count);
+        IndexBuffer(const uint32_t* data, uint32_t count);
         ~IndexBuffer();
 
         void Bind() const;
