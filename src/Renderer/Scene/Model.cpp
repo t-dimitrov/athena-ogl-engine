@@ -123,6 +123,8 @@ namespace Athena
             std::vector<float> tangentData;
             if (primitive.attributes.count("TANGENT"))
                 tangentData = ExtractBufferData(model, primitive.attributes.at("TANGENT"));
+            else
+                LOG_WARN("Mesh {} does not have TANGENT data", mesh.name);
 
             std::vector<Mesh::Vertex> vertices(positionData.size() / 3); // 3 floats = vertex position
             for (size_t i = 0; i < vertices.size(); ++i)
@@ -142,15 +144,15 @@ namespace Athena
                 if (tangentData.size() > 0)
                 {
                     vertices[i].tangent = glm::vec4(
+                        tangentData[i * 3 + 3],
                         tangentData[i * 3 + 0],
                         tangentData[i * 3 + 1],
-                        tangentData[i * 3 + 2],
-                        tangentData[i * 3 + 3]
+                        tangentData[i * 3 + 2]
                     );
                 }
                 else
                 {
-                    vertices[i].tangent = glm::vec4(0.0f);
+                    vertices[i].tangent = glm::vec4(1.0f);
                 }
 
                 vertices[i].uv = glm::vec2(

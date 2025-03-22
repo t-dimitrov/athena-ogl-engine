@@ -41,7 +41,9 @@ namespace Athena
         Ref<Model> _model;
         Ref<Shader> _shader;
 
-        glm::vec3 _lightPosition = { -1.0f, -1.0f, -1.0f };
+        // Light
+        float _lightAmbientStrength = 0.1f;
+        glm::vec3 _lightDirection = { -1.0f, -1.0f, -1.0f };
         glm::vec3 _lightColor = { 1.0f, 1.0f, 1.0f };
     };
 }

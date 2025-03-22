@@ -29,10 +29,10 @@ namespace Athena
         });
 
         //_model = Ref<Model>::Create("assets/Models/suzanne/suzanne.gltf");
-        //_model = Ref<Model>::Create("assets/Models/survival_guitar_backpack/scene.gltf");
+        _model = Ref<Model>::Create("assets/Models/survival_guitar_backpack/scene.gltf");
         //_model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/ABeautifulGame/glTF/ABeautifulGame.gltf");
         //_model = Ref<Model>::Create("assets/Models/main1_sponza/NewSponza_Main_glTF_003.gltf");
-        _model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/NormalTangentMirrorTest/glTF/NormalTangentMirrorTest.gltf");
+        //_model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/NormalTangentTest/glTF/NormalTangentTest.gltf");
 
         _shader = Ref<Shader>::Create("assets/Shaders/Simple.vert.glsl", "assets/Shaders/Simple.frag.glsl");
     }
@@ -56,7 +56,8 @@ namespace Athena
         _shader->SetUniformMat4("u_projection", camera->GetProjection());
         _shader->SetUniformMat4("u_view", camera->GetView());
 
-        _shader->SetUniformFloat3("light.direction", _lightPosition);
+        _shader->SetUniformFloat3("light.direction", _lightDirection);
+        _shader->SetUniformFloat("light.ambientStrength", _lightAmbientStrength);
         _shader->SetUniformFloat3("light.color", _lightColor);
     }
 
@@ -82,8 +83,9 @@ namespace Athena
 
         ImGui::Separator();
 
-        ImGui::Text("Directional Light");
-        ImGui::DragFloat3("Direction", &_lightPosition.x);
+        ImGui::Text("Light");
+        ImGui::DragFloat3("Direction", &_lightDirection.x);
+        ImGui::DragFloat("Ambient Strength", &_lightAmbientStrength, 0.05f, 0.0f, 1.0f);
         ImGui::ColorEdit3("Color", &_lightColor.r);
 
         ImGui::Separator();

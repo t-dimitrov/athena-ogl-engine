@@ -19,6 +19,7 @@ uniform Material u_material;
 struct Light
 {
     vec3 direction;
+    float ambientStrength;
     vec3 color;
 };
 uniform Light light;
@@ -27,15 +28,20 @@ void main()
 {
     vec3 albedo = texture(u_material.albedoTexture, fs_in.uv).rgb;
     vec3 normal = texture(u_material.normalTexture, fs_in.uv).rgb;
+    
+    // Normal Mapping
+    normal = normal * 2.0 - 1.0;
+    normal = normalize(fs_in.TBN * normal);
 
-    // Normal map values are usually in [0, 1], so remap to [-1, 1]
-    normal = normalize(normal * 2.0 - 1.0); // Transform to tangent space normal
-    //normal = normalize(fs_in.TBN * normal); // Using TBN matrix to convert to world space
+    // Directional light
+    vec3 lightDir = normalize(-light.direction);
 
-    //// Directional light
-    vec3 lightDir = normalize(-light.direction); // Light direction
-    float diff = max(dot(normal, lightDir), 0.0); // Diffuse term
+    // Ambient
+    vec3 ambient = light.ambientStrength * light.color;
+
+    // Diffuse
+    float diff = max(dot(normal, lightDir), 0.0);
     vec3 diffuse = diff * light.color;
 
-    FragColor = vec4((diffuse /*+ambient*/)*albedo, 1.0);
+    FragColor = vec4((ambient + diffuse) * albedo, 1.0);
 }

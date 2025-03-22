@@ -18,16 +18,16 @@ out VS_OUT
 
 void main()
 {
-    vs_out.position = a_Position;
+    vs_out.position = (u_model * vec4(a_Position, 1.0)).xyz;
     vs_out.normal = a_Normal;
     vs_out.uv = a_UV;
 
     vec3 bitangent = cross(a_Normal, a_Tangent.xyz) * a_Tangent.w;
 
-    vec3 T = normalize(vec3(u_model * a_Tangent));
-    vec3 B = normalize(vec3(u_model * vec4(bitangent, 0.0)));
-    vec3 N = normalize(vec3(u_model * vec4(a_Normal, 0.0)));
+    vec3 T = vec3(u_model * vec4(a_Tangent.xyz, 0.0));
+    vec3 B = vec3(u_model * vec4(bitangent, 0.0));
+    vec3 N = vec3(u_model * vec4(a_Normal, 0.0));
     vs_out.TBN = mat3(T, B, N);
 
-    gl_Position = u_projection * u_view * u_model * vec4(a_Position, 1.0);
+    gl_Position = u_projection * u_view * vec4(vs_out.position, 1.0);
 }
