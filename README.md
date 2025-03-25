@@ -41,7 +41,8 @@ cmake ../
   - [x] Fragment shader
   - [ ] Geometry shader
   - [ ] Compute shader
-- [ ] Framebuffers
+- [x] Framebuffers
+- [ ] Uniform buffers
 
 ## Rendering
 - [ ] Importing glTF models

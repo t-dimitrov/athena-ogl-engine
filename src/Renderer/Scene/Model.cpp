@@ -123,8 +123,6 @@ namespace Athena
             std::vector<float> tangentData;
             if (primitive.attributes.count("TANGENT"))
                 tangentData = ExtractBufferData(model, primitive.attributes.at("TANGENT"));
-            else
-                LOG_WARN("Mesh {} does not have TANGENT data", mesh.name);
 
             std::vector<Mesh::Vertex> vertices(positionData.size() / 3); // 3 floats = vertex position
             for (size_t i = 0; i < vertices.size(); ++i)
@@ -166,12 +164,12 @@ namespace Athena
             if (primitive.material > -1)
             {
                 const tinygltf::Material& material = model.materials[primitive.material];
-                materialName = material.name;
+                materialName = material.name + std::to_string(primitive.material);
 
                 MaterialLibrary& materialLibrary = MaterialLibrary::Instance();
-                if (materialLibrary.Has(material.name))
+                if (materialLibrary.Has(materialName))
                 {
-                    meshMaterial = materialLibrary.Get(material.name);
+                    meshMaterial = materialLibrary.Get(materialName);
                 }
                 else
                 {
@@ -180,18 +178,18 @@ namespace Athena
                     int baseColorTextureIndex = material.pbrMetallicRoughness.baseColorTexture.index;
                     if (baseColorTextureIndex > -1)
                     {
-                        std::string textureName = material.name + "_albedoTexture";
+                        std::string textureName = materialName + "_albedoTexture";
                         meshMaterial->albedoTexture = LoadTexture(model, textureName, baseColorTextureIndex);
                     }
 
                     int normalTextureIndex = material.normalTexture.index;
                     if (normalTextureIndex > -1)
                     {
-                        std::string textureName = material.name + "_normalTexture";
+                        std::string textureName = materialName + "_normalTexture";
                         meshMaterial->normalTexture = LoadTexture(model, textureName, normalTextureIndex);
                     }
 
-                    materialLibrary.Add(material.name, meshMaterial);
+                    materialLibrary.Add(materialName, meshMaterial);
                 }
             }
 

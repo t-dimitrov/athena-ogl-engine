@@ -17,4 +17,9 @@ namespace Athena
     {
         glBindVertexArray(_vertexArrayId);
     }
+
+    void VertexArray::Unbind() const
+    {
+        glBindVertexArray(0);
+    }
 }

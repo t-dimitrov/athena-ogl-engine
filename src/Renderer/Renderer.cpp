@@ -1,5 +1,6 @@
 #include "Renderer.h"
 #include "Core/Log.h"
+#include "Core/Event/WindowEvents.h"
 
 #include <glad/glad.h>
 #include "imgui.h"
@@ -28,11 +29,45 @@ namespace Athena
             { "ice", "assets/Textures/ice.jpg" }
         });
 
+        FramebufferDescriptor framebufferDesc{};
+        framebufferDesc.attachments = {
+            { FramebufferTextureFormat::Color },
+            { FramebufferTextureFormat::Depth }
+        };
+        framebufferDesc.debugName = "Main Framebuffer";
+        _framebuffer = Ref<Framebuffer>::Create(framebufferDesc);
+
+        _screenShader = Ref<Shader>::Create("assets/Shaders/Screen.vert.glsl", "assets/Shaders/Screen.frag.glsl");
+        _screenShader->Bind();
+        _screenVAO = Ref<VertexArray>::Create();
+        _screenVAO->Bind();
+        {
+            float quadVertices[24] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+                // positions   // texCoords
+                -1.0f, -1.0f,  0.0f, 0.0f,
+                 1.0f, -1.0f,  1.0f, 0.0f,
+                 1.0f,  1.0f,  1.0f, 1.0f,
+                -1.0f,  1.0f,  0.0f, 1.0f
+            };
+            _quadVertexBuffer = Ref<VertexBuffer>::Create(quadVertices, sizeof(quadVertices));
+            _quadVertexBuffer->SetLayout({
+                { ShaderDataType::Float2, "a_Position" },
+                { ShaderDataType::Float2, "a_TexCoord" },
+            });
+
+            uint32_t screenIndices[6] = {
+                0, 1, 2,
+                2, 3, 0
+            };
+            _quadIndexBuffer = Ref<IndexBuffer>::Create(screenIndices, 6);
+        }
+        _screenVAO->Unbind();
+
         //_model = Ref<Model>::Create("assets/Models/suzanne/suzanne.gltf");
-        _model = Ref<Model>::Create("assets/Models/survival_guitar_backpack/scene.gltf");
+        //_model = Ref<Model>::Create("assets/Models/survival_guitar_backpack/scene.gltf");
         //_model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/ABeautifulGame/glTF/ABeautifulGame.gltf");
-        //_model = Ref<Model>::Create("assets/Models/main1_sponza/NewSponza_Main_glTF_003.gltf");
         //_model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/NormalTangentTest/glTF/NormalTangentTest.gltf");
+        _model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/Sponza/glTF/Sponza.gltf");
 
         _shader = Ref<Shader>::Create("assets/Shaders/Simple.vert.glsl", "assets/Shaders/Simple.frag.glsl");
     }
@@ -46,12 +81,17 @@ namespace Athena
 
     void Renderer::BeginFrame(const Ref<EditorCamera>& camera)
     {
+        // First pass
+        _framebuffer->Bind();
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
      
+        // Todo: Set uniform buffer
         _shader->Bind();
         _shader->SetUniformMat4("u_projection", camera->GetProjection());
         _shader->SetUniformMat4("u_view", camera->GetView());
@@ -59,21 +99,47 @@ namespace Athena
         _shader->SetUniformFloat3("light.direction", _lightDirection);
         _shader->SetUniformFloat("light.ambientStrength", _lightAmbientStrength);
         _shader->SetUniformFloat3("light.color", _lightColor);
-    }
 
-    void Renderer::EndFrame()
-    {
         glm::mat4 modelRotationMatrix =
             glm::rotate(glm::mat4(1.0f), glm::radians(_modelRotation.x), glm::vec3(1.0f, 0.0f, 0.0f)) *
             glm::rotate(glm::mat4(1.0f), glm::radians(_modelRotation.y), glm::vec3(0.0f, 1.0f, 0.0f)) *
             glm::rotate(glm::mat4(1.0f), glm::radians(_modelRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
 
-        glm::mat4 modelTransform = 
+        glm::mat4 modelTransform =
             glm::translate(glm::mat4(1.0f), _modelPosition) *
             modelRotationMatrix *
             glm::scale(glm::mat4(1.0f), _modelScale);
 
         _model->Draw(_shader, modelTransform);
+    }
+
+    /*void Renderer::SubmitModel(const Ref<Model>& model, const Ref<Shader>& shader, const glm::mat4& transform)
+    {
+        model->Draw(shader, transform);
+    }*/
+
+    void Renderer::EndFrame()
+    {
+        // Screen pass
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glDisable(GL_DEPTH_TEST);
+        glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        _screenShader->Bind();
+        //_screenShader->SetUniformInt("screenTexture", 0);
+        _screenVAO->Bind();
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, _framebuffer->GetColorAttachmentId());
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    }
+
+    void Renderer::OnEvent(Event& e)
+    {
+        if (e.GetEventType() == EventType::WindowResize)
+        {
+            WindowResizeEvent& wre = (WindowResizeEvent&)e;
+            _framebuffer->Resize(wre.GetWidth(), wre.GetHeight());
+        }
     }
 
     void Renderer::OnImGuiRender()
@@ -89,6 +155,14 @@ namespace Athena
         ImGui::ColorEdit3("Color", &_lightColor.r);
 
         ImGui::Separator();
+        if (ImGui::TreeNodeEx("Framebuffer", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Selected))
+        {
+            ImGui::Text("Color Attachment 0");
+            ImGui::Image(_framebuffer->GetColorAttachmentId(0), ImVec2{ 100, 100 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+            ImGui::TreePop();
+        }
+        ImGui::Separator();
+
         if (ImGui::TreeNodeEx("Materials", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Selected))
         {
             const auto& materials = _materialLibrary->GetAllMaterials();

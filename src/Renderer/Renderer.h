@@ -4,6 +4,7 @@
 
 #include "MaterialLibrary.h"
 #include "TextureLibrary.h"
+#include "Framebuffer.h"
 #include "Shader.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
@@ -27,6 +28,7 @@ namespace Athena
         void BeginFrame(const Ref<EditorCamera>& camera);
         void EndFrame();
 
+        void OnEvent(Event& e);
         void OnImGuiRender();
 
     private:
@@ -34,6 +36,12 @@ namespace Athena
 
         Ref<MaterialLibrary> _materialLibrary;
         Ref<TextureLibrary> _textureLibrary;
+
+        Ref<Framebuffer> _framebuffer;
+        Ref<Shader> _screenShader;
+        Ref<VertexArray> _screenVAO;
+        Ref<VertexBuffer> _quadVertexBuffer;
+        Ref<IndexBuffer> _quadIndexBuffer;
 
         glm::vec3 _modelPosition = glm::vec3{ 0.0f };
         glm::vec3 _modelRotation = glm::vec3{ 0.0f };

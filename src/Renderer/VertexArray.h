@@ -10,6 +10,7 @@ namespace Athena
         ~VertexArray();
 
         void Bind() const;
+        void Unbind() const;
 
     private:
         uint32_t _vertexArrayId;

@@ -72,5 +72,6 @@ namespace Athena
         }
 
         _editorCamera->OnEvent(e);
+        _renderer->OnEvent(e);
     }
 }

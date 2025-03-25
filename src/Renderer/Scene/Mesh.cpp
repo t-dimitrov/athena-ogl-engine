@@ -10,7 +10,6 @@ namespace Athena
         _vertexArray->Bind();
         
         _vertexBuffer = Ref<VertexBuffer>::Create(vertices.data(), static_cast<uint32_t>(vertices.size() * sizeof(Vertex)));
-        _vertexBuffer->Bind();
         _vertexBuffer->SetLayout({
             { ShaderDataType::Float3, "a_Position" },
             { ShaderDataType::Float3, "a_Normal" },
@@ -19,9 +18,7 @@ namespace Athena
         });
 
         _indexBuffer = Ref<IndexBuffer>::Create(indices.data(), static_cast<uint32_t>(indices.size()));
-        _indexBuffer->Bind();
-
-        glBindVertexArray(0);
+        _vertexArray->Unbind();
     }
 
     Mesh::~Mesh()
