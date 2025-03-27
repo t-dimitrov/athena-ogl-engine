@@ -10,6 +10,8 @@
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "Texture2D.h"
+#include "UniformBuffer.h"
+
 #include "Scene/Model.h"
 
 #include <glm/glm.hpp>
@@ -42,6 +44,7 @@ namespace Athena
         Ref<VertexArray> _screenVAO;
         Ref<VertexBuffer> _quadVertexBuffer;
         Ref<IndexBuffer> _quadIndexBuffer;
+        Ref<UniformBuffer> _cameraUniformBuffer;
 
         glm::vec3 _modelPosition = glm::vec3{ 0.0f };
         glm::vec3 _modelRotation = glm::vec3{ 0.0f };

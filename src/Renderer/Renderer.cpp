@@ -49,7 +49,7 @@ namespace Athena
                  1.0f,  1.0f,  1.0f, 1.0f,
                 -1.0f,  1.0f,  0.0f, 1.0f
             };
-            _quadVertexBuffer = Ref<VertexBuffer>::Create(quadVertices, sizeof(quadVertices));
+            _quadVertexBuffer = Ref<VertexBuffer>::Create(quadVertices, static_cast<uint32_t>(sizeof(quadVertices)));
             _quadVertexBuffer->SetLayout({
                 { ShaderDataType::Float2, "a_Position" },
                 { ShaderDataType::Float2, "a_TexCoord" },
@@ -62,6 +62,8 @@ namespace Athena
             _quadIndexBuffer = Ref<IndexBuffer>::Create(screenIndices, 6);
         }
         _screenVAO->Unbind();
+
+        _cameraUniformBuffer = Ref<UniformBuffer>::Create(sizeof(glm::mat4)*2, 0);
 
         //_model = Ref<Model>::Create("assets/Models/suzanne/suzanne.gltf");
         //_model = Ref<Model>::Create("assets/Models/survival_guitar_backpack/scene.gltf");
@@ -93,8 +95,10 @@ namespace Athena
      
         // Todo: Set uniform buffer
         _shader->Bind();
-        _shader->SetUniformMat4("u_projection", camera->GetProjection());
-        _shader->SetUniformMat4("u_view", camera->GetView());
+        glm::mat4 viewProjMatrix = camera->GetProjection() * camera->GetView();
+        _cameraUniformBuffer->SetData(&viewProjMatrix, sizeof(glm::mat4), 0);
+        //_shader->SetUniformMat4("u_projection", camera->GetProjection());
+        //_shader->SetUniformMat4("u_view", camera->GetView());
 
         _shader->SetUniformFloat3("light.direction", _lightDirection);
         _shader->SetUniformFloat("light.ambientStrength", _lightAmbientStrength);

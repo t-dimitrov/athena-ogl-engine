@@ -4,8 +4,10 @@ layout(location = 1) in vec3 a_Normal;
 layout(location = 2) in vec4 a_Tangent;
 layout(location = 3) in vec2 a_UV;
 
-uniform mat4 u_projection;
-uniform mat4 u_view;
+layout(std140, binding = 0) uniform Camera
+{
+    uniform mat4 viewProjection;
+};
 uniform mat4 u_model;
 
 out VS_OUT
@@ -29,5 +31,5 @@ void main()
     vec3 N = vec3(u_model * vec4(a_Normal, 0.0));
     vs_out.TBN = mat3(T, B, N);
 
-    gl_Position = u_projection * u_view * vec4(vs_out.position, 1.0);
+    gl_Position = viewProjection * vec4(vs_out.position, 1.0);
 }
