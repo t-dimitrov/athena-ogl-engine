@@ -9,7 +9,7 @@ namespace Athena
     {
         for (const auto& attachment : _descriptor.attachments)
         {
-            if (attachment.format == FramebufferTextureFormat::DEPTH32F_STENCIL8)
+            if (attachment.format == FramebufferTextureFormat::DEPTH24)
             {
                 _depthAttachmentDescriptor = attachment;
             }
@@ -99,8 +99,8 @@ namespace Athena
 
 			switch (_depthAttachmentDescriptor.format)
 			{
-			case FramebufferTextureFormat::DEPTH32F_STENCIL8:
-				AttachDepthTexture(_depthAttachmentId, _descriptor.samples, GL_DEPTH24_STENCIL8, GL_DEPTH_STENCIL_ATTACHMENT, _descriptor.width, _descriptor.height);
+			case FramebufferTextureFormat::DEPTH24:
+				AttachDepthTexture(_depthAttachmentId, _descriptor.samples, GL_DEPTH_COMPONENT24, GL_DEPTH_ATTACHMENT, _descriptor.width, _descriptor.height);
 				break;
 			}
 		}
@@ -115,6 +115,7 @@ namespace Athena
 		{
 			// Only depth pass
 			glDrawBuffer(GL_NONE);
+			glReadBuffer(GL_NONE);
 		}
 
 		ATH_ASSERT(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE, "Framebuffer is incomplete!");

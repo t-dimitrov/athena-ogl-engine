@@ -16,12 +16,12 @@ namespace Athena
 		RGBA16,
 		RGBA32,
 
-		// Depth/stencil
-		DEPTH32F_STENCIL8,
+		// Depth
+		DEPTH24,
 
 		// Defaults
 		Color = RGBA8,
-		Depth = DEPTH32F_STENCIL8
+		Depth = DEPTH24
 	};
 	
 	struct FramebufferAttachmentDescriptor

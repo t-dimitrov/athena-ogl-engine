@@ -14,6 +14,8 @@
 
 #include "Scene/Model.h"
 
+#include "Light/Light.h"
+
 #include <glm/glm.hpp>
 
 namespace Athena
@@ -40,7 +42,11 @@ namespace Athena
         Ref<TextureLibrary> _textureLibrary;
 
         Ref<Framebuffer> _framebuffer;
+        Ref<Framebuffer> _fbShadowMap;
+
         Ref<Shader> _screenShader;
+        Ref<Shader> _shadowMapShader;
+
         Ref<VertexArray> _screenVAO;
         Ref<VertexBuffer> _quadVertexBuffer;
         Ref<IndexBuffer> _quadIndexBuffer;
@@ -50,11 +56,10 @@ namespace Athena
         glm::vec3 _modelRotation = glm::vec3{ 0.0f };
         glm::vec3 _modelScale = glm::vec3{ 1.0f };
         Ref<Model> _model;
+        Ref<Model> _cubeModel;
         Ref<Shader> _shader;
 
         // Light
-        float _lightAmbientStrength = 0.1f;
-        glm::vec3 _lightDirection = { -1.0f, -1.0f, -1.0f };
-        glm::vec3 _lightColor = { 1.0f, 1.0f, 1.0f };
+        DirectionalLight _directionalLight;
     };
 }

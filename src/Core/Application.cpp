@@ -43,14 +43,14 @@ namespace Athena
             _editorCamera->OnUpdate(1.0f);
 
             _renderer->BeginFrame(_editorCamera);
+            //_renderer->SubmitModel(_model, _shader, _modelPos, _modelScale, _modelRotation);
+            _renderer->EndFrame();
             
             _window->OnImGuiBeginFrame();
-            _editorCamera->OnImGuiRender();
-            
-            _renderer->OnImGuiRender();
-            _renderer->EndFrame();
-
+                _editorCamera->OnImGuiRender();
+                _renderer->OnImGuiRender();
             _window->OnImGuiEndFrame();
+
             _window->Present();
         }
     }

@@ -42,7 +42,7 @@ cmake ../
   - [ ] Geometry shader
   - [ ] Compute shader
 - [x] Framebuffers
-- [ ] Uniform buffers
+- [x] Uniform buffers
 
 ## Rendering
 - [ ] Importing glTF models
@@ -51,7 +51,7 @@ cmake ../
   - [ ] Reading pbr material data
 - [ ] HDR environment
 - [x] Normal mapping
-- [ ] Shadow mapping
+- [x] Shadow mapping
 - [ ] Bloom
 - [ ] Deferred rendering
   - [ ] Multiple Light casters

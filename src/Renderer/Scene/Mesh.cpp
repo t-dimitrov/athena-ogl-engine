@@ -35,10 +35,24 @@ namespace Athena
         shader->SetUniformInt("u_material.normalTexture", 1);
 
         if (material->albedoTexture)
+        {
+            shader->SetUniformInt("u_material.hasAlbedo", 1);
             material->albedoTexture->Bind(0);
+        }
+        else
+        {
+            shader->SetUniformInt("u_material.hasAlbedo", 0);
+        }
 
         if (material->normalTexture)
+        {
+            shader->SetUniformInt("u_material.hasNormal", 1);
             material->normalTexture->Bind(1);
+        }
+        else
+        {
+            shader->SetUniformInt("u_material.hasNormal", 0);
+        }
 
         _vertexArray->Bind();
         glDrawElements(GL_TRIANGLES, _indexBuffer->GetElementCount(), GL_UNSIGNED_INT, 0);

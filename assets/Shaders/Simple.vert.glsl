@@ -10,12 +10,22 @@ layout(std140, binding = 0) uniform Camera
 };
 uniform mat4 u_model;
 
+struct Light
+{
+    vec3 direction;
+    float ambientStrength;
+    vec3 color;
+    mat4 projection;
+};
+uniform Light light;
+
 out VS_OUT
 {
     vec3 position;
     vec3 normal;
     vec2 uv;
     mat3 TBN; // Tangent-Binormal-Normal matrix
+    vec4 fragPosLight;
 } vs_out;
 
 void main()
@@ -30,6 +40,8 @@ void main()
     vec3 B = vec3(u_model * vec4(bitangent, 0.0));
     vec3 N = vec3(u_model * vec4(a_Normal, 0.0));
     vs_out.TBN = mat3(T, B, N);
+
+    vs_out.fragPosLight = light.projection * vec4(vs_out.position, 1.0);
 
     gl_Position = viewProjection * vec4(vs_out.position, 1.0);
 }

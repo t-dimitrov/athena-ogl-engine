@@ -37,8 +37,17 @@ namespace Athena
         framebufferDesc.debugName = "Main Framebuffer";
         _framebuffer = Ref<Framebuffer>::Create(framebufferDesc);
 
+        framebufferDesc = {};
+        framebufferDesc.attachments = {
+            { FramebufferTextureFormat::Depth }
+        };
+        framebufferDesc.debugName = "Shadpw Map";
+        _fbShadowMap = Ref<Framebuffer>::Create(framebufferDesc);
+
         _screenShader = Ref<Shader>::Create("assets/Shaders/Screen.vert.glsl", "assets/Shaders/Screen.frag.glsl");
-        _screenShader->Bind();
+
+        _shadowMapShader = Ref<Shader>::Create("assets/Shaders/ShadowMap.vert.glsl", "assets/Shaders/ShadowMap.frag.glsl");
+
         _screenVAO = Ref<VertexArray>::Create();
         _screenVAO->Bind();
         {
@@ -63,13 +72,14 @@ namespace Athena
         }
         _screenVAO->Unbind();
 
-        _cameraUniformBuffer = Ref<UniformBuffer>::Create(sizeof(glm::mat4)*2, 0);
+        _cameraUniformBuffer = Ref<UniformBuffer>::Create(static_cast<uint32_t>(sizeof(glm::mat4)), 0);
 
         //_model = Ref<Model>::Create("assets/Models/suzanne/suzanne.gltf");
         //_model = Ref<Model>::Create("assets/Models/survival_guitar_backpack/scene.gltf");
         //_model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/ABeautifulGame/glTF/ABeautifulGame.gltf");
-        //_model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/NormalTangentTest/glTF/NormalTangentTest.gltf");
+        //_model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/Cube/glTF/Cube.gltf");
         _model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/Sponza/glTF/Sponza.gltf");
+        _cubeModel = Ref<Model>::Create("assets/Models/glTF-Sample-Models/Cube/glTF/Cube.gltf");
 
         _shader = Ref<Shader>::Create("assets/Shaders/Simple.vert.glsl", "assets/Shaders/Simple.frag.glsl");
     }
@@ -83,8 +93,62 @@ namespace Athena
 
     void Renderer::BeginFrame(const Ref<EditorCamera>& camera)
     {
+        // Setup camera UBO
+        glm::mat4 viewProjMatrix = camera->GetProjection() * camera->GetView();
+        _cameraUniformBuffer->SetData(&viewProjMatrix, sizeof(glm::mat4), 0);
+
+        // Setup model transform
+        glm::mat4 modelRotationMatrix =
+            glm::rotate(glm::mat4(1.0f), glm::radians(_modelRotation.x), glm::vec3(1.0f, 0.0f, 0.0f)) *
+            glm::rotate(glm::mat4(1.0f), glm::radians(_modelRotation.y), glm::vec3(0.0f, 1.0f, 0.0f)) *
+            glm::rotate(glm::mat4(1.0f), glm::radians(_modelRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
+        glm::mat4 modelTransform =
+            glm::translate(glm::mat4(1.0f), _modelPosition) *
+            modelRotationMatrix *
+            glm::scale(glm::mat4(1.0f), _modelScale);
+
+        // Shadow pass
+        {
+            glEnable(GL_DEPTH_TEST);
+            _fbShadowMap->Bind();
+            glClear(GL_DEPTH_BUFFER_BIT);
+
+            _shadowMapShader->Bind();
+            _shadowMapShader->SetUniformMat4("u_lightProjection", _directionalLight.orthogonalProjection * _directionalLight.GetView());
+
+            _model->Draw(_shadowMapShader, modelTransform);
+            _cubeModel->Draw(_shadowMapShader, glm::mat4(1.0f));
+
+            _fbShadowMap->Unbind();
+        }
+
+        // Main Render pass
+        {
+            glEnable(GL_DEPTH_TEST);
+            _framebuffer->Bind();
+            glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            _shader->Bind();
+            _shader->SetUniformFloat3("light.direction", _directionalLight.direction);
+            _shader->SetUniformFloat("light.ambientStrength", _directionalLight.ambientStrength);
+            _shader->SetUniformFloat3("light.color", _directionalLight.color);
+            _shader->SetUniformMat4("light.projection", _directionalLight.orthogonalProjection * _directionalLight.GetView());
+
+            glActiveTexture(GL_TEXTURE3);
+            glBindTexture(GL_TEXTURE_2D, _fbShadowMap->GetDepthAttachmentId());
+            _shader->SetUniformInt("u_shadowMap", 3);
+
+            _model->Draw(_shader, modelTransform);
+            _cubeModel->Draw(_shader, glm::mat4(1.0f));
+
+            _framebuffer->Unbind();
+        }
+        
+        // Screen pass
+
         // First pass
-        _framebuffer->Bind();
+        /*_framebuffer->Bind();
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_CULL_FACE);
         glEnable(GL_BLEND);
@@ -92,35 +156,11 @@ namespace Athena
 
         glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-     
-        // Todo: Set uniform buffer
+
         _shader->Bind();
-        glm::mat4 viewProjMatrix = camera->GetProjection() * camera->GetView();
-        _cameraUniformBuffer->SetData(&viewProjMatrix, sizeof(glm::mat4), 0);
-        //_shader->SetUniformMat4("u_projection", camera->GetProjection());
-        //_shader->SetUniformMat4("u_view", camera->GetView());
 
-        _shader->SetUniformFloat3("light.direction", _lightDirection);
-        _shader->SetUniformFloat("light.ambientStrength", _lightAmbientStrength);
-        _shader->SetUniformFloat3("light.color", _lightColor);
-
-        glm::mat4 modelRotationMatrix =
-            glm::rotate(glm::mat4(1.0f), glm::radians(_modelRotation.x), glm::vec3(1.0f, 0.0f, 0.0f)) *
-            glm::rotate(glm::mat4(1.0f), glm::radians(_modelRotation.y), glm::vec3(0.0f, 1.0f, 0.0f)) *
-            glm::rotate(glm::mat4(1.0f), glm::radians(_modelRotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-
-        glm::mat4 modelTransform =
-            glm::translate(glm::mat4(1.0f), _modelPosition) *
-            modelRotationMatrix *
-            glm::scale(glm::mat4(1.0f), _modelScale);
-
-        _model->Draw(_shader, modelTransform);
+        _model->Draw(_shader, modelTransform);*/
     }
-
-    /*void Renderer::SubmitModel(const Ref<Model>& model, const Ref<Shader>& shader, const glm::mat4& transform)
-    {
-        model->Draw(shader, transform);
-    }*/
 
     void Renderer::EndFrame()
     {
@@ -130,9 +170,9 @@ namespace Athena
         glClearColor(1.0f, 0.0f, 1.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         _screenShader->Bind();
-        //_screenShader->SetUniformInt("screenTexture", 0);
         _screenVAO->Bind();
         glActiveTexture(GL_TEXTURE0);
+        //glBindTexture(GL_TEXTURE_2D, _fbShadowMap->GetDepthAttachmentId());
         glBindTexture(GL_TEXTURE_2D, _framebuffer->GetColorAttachmentId());
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     }
@@ -143,6 +183,7 @@ namespace Athena
         {
             WindowResizeEvent& wre = (WindowResizeEvent&)e;
             _framebuffer->Resize(wre.GetWidth(), wre.GetHeight());
+            _fbShadowMap->Resize(wre.GetWidth(), wre.GetHeight());
         }
     }
 
@@ -154,15 +195,19 @@ namespace Athena
         ImGui::Separator();
 
         ImGui::Text("Light");
-        ImGui::DragFloat3("Direction", &_lightDirection.x);
-        ImGui::DragFloat("Ambient Strength", &_lightAmbientStrength, 0.05f, 0.0f, 1.0f);
-        ImGui::ColorEdit3("Color", &_lightColor.r);
+        ImGui::DragFloat("Ambient Strength", &_directionalLight.ambientStrength, 0.05f, 0.0f, 1.0f);
+        ImGui::DragFloat3("Direction", &_directionalLight.direction.x);
+        ImGui::ColorEdit3("Color", &_directionalLight.color.r);
 
         ImGui::Separator();
         if (ImGui::TreeNodeEx("Framebuffer", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Selected))
         {
             ImGui::Text("Color Attachment 0");
             ImGui::Image(_framebuffer->GetColorAttachmentId(0), ImVec2{ 100, 100 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+            ImGui::Text("Depth Attachment");
+            ImGui::Image(_framebuffer->GetDepthAttachmentId(), ImVec2{ 100, 100 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+            ImGui::Text("Shadow Map");
+            ImGui::Image(_fbShadowMap->GetDepthAttachmentId(), ImVec2{ 100, 100 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
             ImGui::TreePop();
         }
         ImGui::Separator();
