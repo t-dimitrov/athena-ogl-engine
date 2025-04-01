@@ -5,7 +5,7 @@ This project is created with the purpose of understanding how GPU rendering work
 ## Prerequisites
 - C++ Compiler (compatible with C++17 or later)
 - CMake (version 3.29 or later)
-- Visual Studio (2022 or later)
+- Visual Studio (2022)
 
 ## Instructions
 Clone with version 2.13 of Git or later:
@@ -21,7 +21,7 @@ git clone --recursive https://github.com/t-dimitrov/athena-ogl-engine/
 
 ### If using Visual Studio
 - Open the project by clicking `Open Local Folder`.
-### If using CMake
+### Else build using CMake
 ```pwsh
 cd athena-ogl-engine/
 mkdir build
@@ -36,30 +36,31 @@ cmake ../
 - [x] Index buffers
 - [x] 2D textures
 - [ ] Cubemaps
-- [ ] Shaders
+- [x] Shaders
   - [x] Vertex shader
   - [x] Fragment shader
-  - [ ] Geometry shader
-  - [ ] Compute shader
 - [x] Framebuffers
 - [x] Uniform buffers
 
 ## Rendering
-- [ ] Importing glTF models
+- [ ] Importing glTF models 
   - [x] Reading vertex data
   - [x] Loading textures
   - [ ] Reading pbr material data
+![sponza-model](images/sponza-first.png)
 - [ ] HDR environment
 - [x] Normal mapping
+![chess-normal-map](images/chess-normal-map.png)
 - [x] Shadow mapping
+![sponza-shadow-map](images/sponza-cube-shadow-map.png)
 - [ ] Bloom
 - [ ] Deferred rendering
   - [ ] Multiple Light casters
-    - [ ] Directional light
+    - [x] Directional light
     - [ ] Point light
   - [ ] Multiple lights
 - [ ] PBR
-- [ ] Forward+ rendering (This one might or might not make it)
+- [ ] Forward+ rendering
 
 ## Engine Subsystems
 - [x] Windowing system with [glfw](https://github.com/glfw/glfw)
