@@ -45,14 +45,13 @@ namespace Athena
         _fbShadowMap = Ref<Framebuffer>::Create(framebufferDesc);
 
         _screenShader = Ref<Shader>::Create("assets/Shaders/Screen.vert.glsl", "assets/Shaders/Screen.frag.glsl");
-
         _shadowMapShader = Ref<Shader>::Create("assets/Shaders/ShadowMap.vert.glsl", "assets/Shaders/ShadowMap.frag.glsl");
+        _shader = Ref<Shader>::Create("assets/Shaders/Simple.vert.glsl", "assets/Shaders/Simple.frag.glsl");
 
         _screenVAO = Ref<VertexArray>::Create();
         _screenVAO->Bind();
         {
-            float quadVertices[24] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
-                // positions   // texCoords
+            float quadVertices[24] = {
                 -1.0f, -1.0f,  0.0f, 0.0f,
                  1.0f, -1.0f,  1.0f, 0.0f,
                  1.0f,  1.0f,  1.0f, 1.0f,
@@ -78,10 +77,9 @@ namespace Athena
         //_model = Ref<Model>::Create("assets/Models/survival_guitar_backpack/scene.gltf");
         //_model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/ABeautifulGame/glTF/ABeautifulGame.gltf");
         //_model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/Cube/glTF/Cube.gltf");
+        //_model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/MetalRoughSpheres/glTF/MetalRoughSpheres.gltf");
         _model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/Sponza/glTF/Sponza.gltf");
         _cubeModel = Ref<Model>::Create("assets/Models/glTF-Sample-Models/Cube/glTF/Cube.gltf");
-
-        _shader = Ref<Shader>::Create("assets/Shaders/Simple.vert.glsl", "assets/Shaders/Simple.frag.glsl");
     }
 
     void Renderer::Shutdown()
@@ -144,22 +142,6 @@ namespace Athena
 
             _framebuffer->Unbind();
         }
-        
-        // Screen pass
-
-        // First pass
-        /*_framebuffer->Bind();
-        glEnable(GL_DEPTH_TEST);
-        glEnable(GL_CULL_FACE);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-        glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        _shader->Bind();
-
-        _model->Draw(_shader, modelTransform);*/
     }
 
     void Renderer::EndFrame()
