@@ -87,6 +87,12 @@ namespace Athena
 				case FramebufferTextureFormat::RGBA8:
 					AttachColorTexture(_colorAttachmentIds[i], _descriptor.samples, GL_RGBA8, _descriptor.width, _descriptor.height, (int)i);
 					break;
+				case FramebufferTextureFormat::RGBA16:
+					AttachColorTexture(_colorAttachmentIds[i], _descriptor.samples, GL_RGBA16, _descriptor.width, _descriptor.height, (int)i);
+					break;
+				default:
+					ATH_ASSERT(false, "FramebufferTextureFormat is not implemented {}", (int)_colorAttachmentDescriptors[i].format);
+					return;
 				}
 			}
 		}

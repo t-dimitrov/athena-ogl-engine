@@ -16,6 +16,7 @@ namespace Athena
         void OnImGuiRender();
 
         glm::mat4 GetView() const { return _viewMatrix; }
+        glm::vec3 GetPosition() const { return _cameraPosition; }
 
     private:
         void RecalculateView();

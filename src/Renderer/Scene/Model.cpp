@@ -118,7 +118,10 @@ namespace Athena
             // Extract vertex data
             std::vector<float> positionData = ExtractBufferData(model, primitive.attributes.at("POSITION"));
             std::vector<float> normalData = ExtractBufferData(model, primitive.attributes.at("NORMAL"));
-            std::vector<float> uvData = ExtractBufferData(model, primitive.attributes.at("TEXCOORD_0"));
+
+            std::vector<float> uvData;
+            if (primitive.attributes.count("TEXCOORD_0"))
+                uvData = ExtractBufferData(model, primitive.attributes.at("TEXCOORD_0"));
             
             std::vector<float> tangentData;
             if (primitive.attributes.count("TANGENT"))
@@ -153,10 +156,17 @@ namespace Athena
                     vertices[i].tangent = glm::vec4(1.0f);
                 }
 
-                vertices[i].uv = glm::vec2(
-                    uvData[i * 2 + 0],
-                    -uvData[i * 2 + 1]
-                );
+                if (uvData.size() > 0)
+                {
+                    vertices[i].uv = glm::vec2(
+                        uvData[i * 2 + 0],
+                        -uvData[i * 2 + 1]
+                    );
+                }
+                else
+                {
+                    vertices[i].uv = glm::vec2(0.0f, 0.0f);
+                }
             }
 
             Ref<Material> meshMaterial;

@@ -1,6 +1,7 @@
 #include "Application.h"
 
 #include "Event/KeyEvents.h"
+#include <imgui.h>
 
 namespace Athena
 {
@@ -24,6 +25,11 @@ namespace Athena
         _editorCamera = Ref<EditorCamera>::Create();
         _editorCamera->SetPerspective(45.0f, static_cast<float>(desc.width), static_cast<float>(desc.height), 0.1f, 1000.0f);
 
+        _materialLibrary = Ref<MaterialLibrary>::Create();
+        _materialLibrary->Init();
+        _textureLibrary = Ref<TextureLibrary>::Create();
+        _textureLibrary->Init();
+
         _renderer = Ref<Renderer>::Create();
         _renderer->Init();
     }
@@ -31,6 +37,8 @@ namespace Athena
     Application::~Application()
     {
         _renderer->Shutdown();
+        _textureLibrary->Release();
+        _materialLibrary->Release();
         s_application = nullptr;
     }
 
@@ -49,6 +57,7 @@ namespace Athena
             _window->OnImGuiBeginFrame();
                 _editorCamera->OnImGuiRender();
                 _renderer->OnImGuiRender();
+                OnImGuiRender();
             _window->OnImGuiEndFrame();
 
             _window->Present();
@@ -73,5 +82,34 @@ namespace Athena
 
         _editorCamera->OnEvent(e);
         _renderer->OnEvent(e);
+    }
+
+    void Application::OnImGuiRender()
+    {
+        ImGui::Begin("Application");
+        if (ImGui::TreeNodeEx("Materials", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Selected))
+        {
+            const auto& materials = _materialLibrary->GetAllMaterials();
+            for (const auto& kvp : materials)
+            {
+                if (ImGui::TreeNode(kvp.first.c_str()))
+                {
+                    Ref<Material> material = kvp.second;
+                    if (material->albedoTexture)
+                    {
+                        ImGui::Text("Albedo Texture");
+                        ImGui::Image(material->albedoTexture->GetTextureId(), ImVec2{ 100.0f, 100.0f }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+                    }
+                    if (material->normalTexture)
+                    {
+                        ImGui::Text("Normal Texture");
+                        ImGui::Image(material->normalTexture->GetTextureId(), ImVec2{ 100.0f, 100.0f }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+                    }
+                    ImGui::TreePop();
+                }
+            }
+            ImGui::TreePop();
+        }
+        ImGui::End();
     }
 }

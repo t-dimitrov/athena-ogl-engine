@@ -13,6 +13,7 @@ namespace Athena
         TextureLibrary();
         ~TextureLibrary();
 
+        void Init();
         void Init(const std::initializer_list<std::pair<std::string, std::string>>& filenames);
         void Release();
 

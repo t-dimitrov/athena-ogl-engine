@@ -85,7 +85,6 @@ namespace Athena
     void Renderer::Shutdown()
     {
         _textureLibrary->Release();
-
         _materialLibrary->Release();
     }
 

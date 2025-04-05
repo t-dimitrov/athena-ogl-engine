@@ -82,7 +82,7 @@ namespace Athena
 		template<class T2>
 		Ref& operator=(Ref<T2>&& other)
 		{
-			DecreaseRef();
+			//DecreaseRef();
 			_instance = (T*)other._instance;
 			other._instance = nullptr;
 			return *this;

@@ -15,6 +15,10 @@ namespace Athena
         s_instance = nullptr;
     }
 
+    void TextureLibrary::Init()
+    {
+    }
+
     void TextureLibrary::Init(const std::initializer_list<std::pair<std::string, std::string>>& filenames)
     {
         for (const auto& pair : filenames)

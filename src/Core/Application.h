@@ -2,6 +2,7 @@
 #include "Ref.h"
 #include "Core/Window.h"
 #include "Renderer/Renderer.h"
+#include "Renderer/DeferredRenderer.h"
 
 namespace Athena
 {
@@ -13,6 +14,7 @@ namespace Athena
 
         void Run();
         void OnEvent(Event& e);
+        void OnImGuiRender();
 
         inline Ref<Window> GetWindow() const { return _window; }
 
@@ -23,7 +25,12 @@ namespace Athena
         bool _isRunning = true;
 
         Ref<EditorCamera> _editorCamera;
-        Ref<Renderer> _renderer;
+
+        Ref<MaterialLibrary> _materialLibrary;
+        Ref<TextureLibrary> _textureLibrary;
+
+        //Ref<Renderer> _renderer;
+        Ref<DeferredRenderer> _renderer;
 
     private:
         static Application* s_application;
