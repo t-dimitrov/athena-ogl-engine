@@ -46,7 +46,7 @@ namespace Athena
 
         _screenShader = Ref<Shader>::Create("assets/Shaders/Screen.vert.glsl", "assets/Shaders/Screen.frag.glsl");
         _shadowMapShader = Ref<Shader>::Create("assets/Shaders/ShadowMap.vert.glsl", "assets/Shaders/ShadowMap.frag.glsl");
-        _shader = Ref<Shader>::Create("assets/Shaders/Simple.vert.glsl", "assets/Shaders/Simple.frag.glsl");
+        _modelShader = Ref<Shader>::Create("assets/Shaders/Simple.vert.glsl", "assets/Shaders/Simple.frag.glsl");
 
         _screenVAO = Ref<VertexArray>::Create();
         _screenVAO->Bind();
@@ -126,18 +126,18 @@ namespace Athena
             glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-            _shader->Bind();
-            _shader->SetUniformFloat3("light.direction", _directionalLight.direction);
-            _shader->SetUniformFloat("light.ambientStrength", _directionalLight.ambientStrength);
-            _shader->SetUniformFloat3("light.color", _directionalLight.color);
-            _shader->SetUniformMat4("light.projection", _directionalLight.orthogonalProjection * _directionalLight.GetView());
+            _modelShader->Bind();
+            _modelShader->SetUniformFloat3("light.direction", _directionalLight.direction);
+            _modelShader->SetUniformFloat("light.ambientStrength", _directionalLight.ambientStrength);
+            _modelShader->SetUniformFloat3("light.color", _directionalLight.color);
+            _modelShader->SetUniformMat4("light.projection", _directionalLight.orthogonalProjection * _directionalLight.GetView());
 
             glActiveTexture(GL_TEXTURE3);
             glBindTexture(GL_TEXTURE_2D, _fbShadowMap->GetDepthAttachmentId());
-            _shader->SetUniformInt("u_shadowMap", 3);
+            _modelShader->SetUniformInt("u_shadowMap", 3);
 
-            _model->Draw(_shader, modelTransform);
-            _cubeModel->Draw(_shader, glm::mat4(1.0f));
+            _model->Draw(_modelShader, modelTransform);
+            _cubeModel->Draw(_modelShader, glm::mat4(1.0f));
 
             _framebuffer->Unbind();
         }

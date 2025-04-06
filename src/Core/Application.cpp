@@ -30,7 +30,7 @@ namespace Athena
         _textureLibrary = Ref<TextureLibrary>::Create();
         _textureLibrary->Init();
 
-        _renderer = Ref<Renderer>::Create();
+        _renderer = Ref<DeferredRenderer>::Create();
         _renderer->Init();
     }
 
@@ -89,7 +89,8 @@ namespace Athena
         ImGui::Begin("Application");
         if (ImGui::TreeNodeEx("Materials", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Selected))
         {
-            const auto& materials = _materialLibrary->GetAllMaterials();
+            auto& lib = MaterialLibrary::Instance();
+            const auto& materials = lib.GetAllMaterials();
             for (const auto& kvp : materials)
             {
                 if (ImGui::TreeNode(kvp.first.c_str()))

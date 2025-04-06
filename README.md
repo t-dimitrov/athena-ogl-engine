@@ -54,11 +54,12 @@ cmake ../
 - [x] Shadow mapping
 ![sponza-shadow-map](images/sponza-cube-shadow-map.png)
 - [ ] Bloom
-- [ ] Deferred rendering
-  - [ ] Multiple Light casters
+- [x] Deferred rendering
+  - [x] Multiple Light casters
     - [x] Directional light
-    - [ ] Point light
-  - [ ] Multiple lights
+    - [x] Point light
+  - [x] Multiple lights
+![sponza-deferred](images/sponza-deferred.png)
 - [ ] PBR
 - [ ] Forward+ rendering
 

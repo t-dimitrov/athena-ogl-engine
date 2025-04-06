@@ -39,7 +39,6 @@ namespace Athena
             {
                 ImGui::Text(_nodeNames[i].c_str());
             }
-
             ImGui::TreePop();
         }
     }

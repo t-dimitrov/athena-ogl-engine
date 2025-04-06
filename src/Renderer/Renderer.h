@@ -57,7 +57,7 @@ namespace Athena
         glm::vec3 _modelScale = glm::vec3{ 1.0f };
         Ref<Model> _model;
         Ref<Model> _cubeModel;
-        Ref<Shader> _shader;
+        Ref<Shader> _modelShader;
 
         // Light
         DirectionalLight _directionalLight;

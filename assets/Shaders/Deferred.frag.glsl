@@ -1,43 +1,32 @@
 #version 460 core
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;        // Position data
+layout(location = 1) out vec4 FragNormal;       // Normal data
+layout(location = 2) out vec4 FragAlbedoSpec;   // Albedo and specular data
 
 in VS_OUT
 {
+    vec3 position;
+    vec3 normal;
     vec2 texCoord;
 } fs_in;
 
-uniform sampler2D gPosition;
-uniform sampler2D gNormal;
-uniform sampler2D gAlbedoSpec;
-
-struct Light
+struct Material
 {
-    vec3 position;
-    vec3 color;
+    sampler2D albedoTexture;
+    int hasAlbedo;
+    sampler2D normalTexture;
+    int hasNormal;
 };
-const int LIGHTS_COUNT = 32;
-uniform Light lights[LIGHTS_COUNT];
-
-uniform vec3 viewPos;
+uniform Material u_material;
 
 void main()
 {
-    // retrieve data from G-buffer
-    vec3 FragPos = texture(gPosition, fs_in.texCoord).rgb;
-    vec3 Normal = texture(gNormal, fs_in.texCoord).rgb;
-    vec3 Albedo = texture(gAlbedoSpec, fs_in.texCoord).rgb;
-    float Specular = texture(gAlbedoSpec, fs_in.texCoord).a;
+    // Output the position to the first attachment
+    FragColor = vec4(fs_in.position, 1.0);
 
-    // then calculate lighting as usual
-    vec3 lighting = Albedo * 0.1; // hard-coded ambient component
-    vec3 viewDir = normalize(viewPos - FragPos);
-    for (int i = 0; i < LIGHTS_COUNT; ++i)
-    {
-        // diffuse
-        vec3 lightDir = normalize(lights[i].position - FragPos);
-        vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Albedo * lights[i].color;
-        lighting += diffuse;
-    }
+    // Output the normal to the second attachment
+    FragNormal = vec4(normalize(fs_in.normal), 1.0);
 
-    FragColor = vec4(lighting, 1.0);
+    // Output the albedo and specular to the third attachment
+    FragAlbedoSpec = texture(u_material.albedoTexture, fs_in.texCoord);
 }

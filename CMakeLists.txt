@@ -69,8 +69,8 @@ endif()
 # Copy 'assets' folder to output folder
 add_custom_target(copy_assets_folder ALL
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${PROJECT_SOURCE_DIR}/assets/
-    ${PROJECT_BINARY_DIR}/assets/
+    ${PROJECT_SOURCE_DIR}/assets/Shaders
+    ${PROJECT_BINARY_DIR}/assets/Shaders
     COMMENT "Copying 'assets' folder into binary directory"
 )
 

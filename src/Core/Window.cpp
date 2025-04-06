@@ -33,6 +33,7 @@ namespace Athena
 		else
 		{
 			glfwWindowHint(GLFW_MAXIMIZED, desc.maximize ? GLFW_TRUE : GLFW_FALSE);
+			glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 			_windowHandle = glfwCreateWindow((int)desc.width, (int)desc.height, desc.title.c_str(), nullptr, nullptr);
 		}
 

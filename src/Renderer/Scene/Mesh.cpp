@@ -31,27 +31,30 @@ namespace Athena
         shader->Bind();
         shader->SetUniformMat4("u_model", transform);
         
-        shader->SetUniformInt("u_material.albedoTexture", 0);
-        shader->SetUniformInt("u_material.normalTexture", 1);
+        if (material != nullptr)
+        {
+            shader->SetUniformInt("u_material.albedoTexture", 0);
+            shader->SetUniformInt("u_material.normalTexture", 1);
 
-        if (material->albedoTexture)
-        {
-            shader->SetUniformInt("u_material.hasAlbedo", 1);
-            material->albedoTexture->Bind(0);
-        }
-        else
-        {
-            shader->SetUniformInt("u_material.hasAlbedo", 0);
-        }
+            if (material->albedoTexture)
+            {
+                shader->SetUniformInt("u_material.hasAlbedo", 1);
+                material->albedoTexture->Bind(0);
+            }
+            else
+            {
+                shader->SetUniformInt("u_material.hasAlbedo", 0);
+            }
 
-        if (material->normalTexture)
-        {
-            shader->SetUniformInt("u_material.hasNormal", 1);
-            material->normalTexture->Bind(1);
-        }
-        else
-        {
-            shader->SetUniformInt("u_material.hasNormal", 0);
+            if (material->normalTexture)
+            {
+                shader->SetUniformInt("u_material.hasNormal", 1);
+                material->normalTexture->Bind(1);
+            }
+            else
+            {
+                shader->SetUniformInt("u_material.hasNormal", 0);
+            }
         }
 
         _vertexArray->Bind();
