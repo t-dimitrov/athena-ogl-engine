@@ -3,7 +3,8 @@ out vec4 FragColor;
 
 layout(std140, binding = 0) uniform Camera
 {
-    uniform mat4 viewProjection;
+    uniform mat4 view;
+    uniform mat4 projection;
     uniform vec3 cameraPosition;
 };
 

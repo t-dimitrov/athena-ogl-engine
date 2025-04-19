@@ -121,7 +121,7 @@ namespace Athena
         _gBufferShader = Ref<Shader>::Create("assets/Shaders/Deferred.vert.glsl", "assets/Shaders/Deferred.frag.glsl");
         _lightingShader = Ref<Shader>::Create("assets/Shaders/Lighting.vert.glsl", "assets/Shaders/Lighting.frag.glsl");
 
-        _uniformBuffer = Ref<UniformBuffer>::Create(static_cast<uint32_t>(sizeof(glm::mat4) + sizeof(glm::vec3)), 0);
+        _uniformBuffer = Ref<UniformBuffer>::Create(static_cast<uint32_t>(sizeof(glm::mat4) * 2 + sizeof(glm::vec3)), 0);
 
         // Screen
         {
@@ -150,10 +150,22 @@ namespace Athena
             _screenVAO->Unbind();
         }
 
-        //_model = Ref<Model>::Create("assets/Models/survival_guitar_backpack/scene.gltf");
-        _model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/Sponza/glTF/Sponza.gltf");
+        _model = Ref<Model>::Create("assets/Models/survival_guitar_backpack/scene.gltf");
+        //_model = Ref<Model>::Create("assets/Models/glTF-Sample-Models/Sponza/glTF/Sponza.gltf");
 
         _pointLights.push_back({ glm::vec3(75.0f, 50.0f, -5.0f), glm::vec3(1.0f, 1.0f, 1.0f) });
+
+        // Skybox
+        {
+            _skybox = Ref<Skybox>::Create(std::vector<std::string>{
+                "assets/Cubemaps/Storforsen2/posx.jpg",
+                "assets/Cubemaps/Storforsen2/negx.jpg",
+                "assets/Cubemaps/Storforsen2/posy.jpg",
+                "assets/Cubemaps/Storforsen2/negy.jpg",
+                "assets/Cubemaps/Storforsen2/posz.jpg",
+                "assets/Cubemaps/Storforsen2/negz.jpg",
+            });
+        }
     }
 
     void DeferredRenderer::Shutdown()
@@ -163,9 +175,11 @@ namespace Athena
     void DeferredRenderer::BeginFrame(const Ref<EditorCamera>& camera)
     {
         // Setup camera UBO
-        glm::mat4 viewProjMatrix = camera->GetProjection() * camera->GetView();
-        _uniformBuffer->SetData(&viewProjMatrix, sizeof(glm::mat4), 0);
-        _uniformBuffer->SetData(&camera->GetPosition(), sizeof(glm::vec3), sizeof(glm::mat4));
+        _uniformBuffer->SetData(&camera->GetView(), sizeof(glm::mat4), 0);
+        _uniformBuffer->SetData(&camera->GetProjection(), sizeof(glm::mat4), sizeof(glm::mat4));
+        _uniformBuffer->SetData(&camera->GetPosition(), sizeof(glm::vec3), sizeof(glm::mat4) * 2);
+
+        _viewMatrix = camera->GetView();
     }
 
     void DeferredRenderer::EndFrame()
@@ -188,6 +202,19 @@ namespace Athena
             glEnable(GL_DEPTH_TEST);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             _model->Draw(_gBufferShader, modelTransform);
+
+            // Draw Skybox
+            {
+                _viewMatrix = glm::mat4(glm::mat3(_viewMatrix));
+                _uniformBuffer->SetData(&_viewMatrix, sizeof(glm::mat4), 0);
+                glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 2, -1, "Skybox");
+                glDepthFunc(GL_LEQUAL);
+                _skybox->Bind();
+                glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+                glDepthFunc(GL_LESS);
+                glPopDebugGroup();
+            }
+
             _gBuffer->Unbind();
             glPopDebugGroup();
         }
@@ -227,6 +254,8 @@ namespace Athena
             //_screenFramebuffer->Unbind();
             glPopDebugGroup();
         }
+
+        
 
         // Screen pass
         {

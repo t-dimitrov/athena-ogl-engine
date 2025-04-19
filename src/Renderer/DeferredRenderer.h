@@ -10,6 +10,7 @@
 #include "IndexBuffer.h"
 #include "Scene/Model.h"
 #include "Scene/Light.h"
+#include "Scene/Skybox.h"
 
 #include <glm/glm.hpp>
 
@@ -44,6 +45,9 @@ namespace Athena
         glm::vec3 _modelScale{ 0.005f };
 
         std::vector<PointLight> _pointLights;
+
+        Ref<Skybox> _skybox;
+        glm::mat4 _viewMatrix;
 
         // Screen
         Ref<Framebuffer> _screenFramebuffer;

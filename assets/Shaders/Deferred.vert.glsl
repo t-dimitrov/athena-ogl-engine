@@ -6,7 +6,8 @@ layout(location = 3) in vec2 a_TexCoord;
 
 layout(std140, binding = 0) uniform Camera
 {
-    uniform mat4 viewProjection;
+    uniform mat4 view;
+    uniform mat4 projection;
     uniform vec3 cameraPosition;
 };
 
@@ -24,5 +25,5 @@ void main()
     vs_out.position = vec3(u_model * vec4(a_Position, 1.0));
     vs_out.normal = mat3(transpose(inverse(u_model))) * a_Normal;
     vs_out.texCoord = a_TexCoord;
-    gl_Position = viewProjection * u_model * vec4(a_Position, 1.0);
+    gl_Position = projection * view * u_model * vec4(a_Position, 1.0);
 }
