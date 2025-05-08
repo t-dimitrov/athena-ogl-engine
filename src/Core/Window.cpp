@@ -44,6 +44,11 @@ namespace Athena
 		}
 		glfwSetWindowUserPointer(_windowHandle, static_cast<void*>(this));
 
+		if (desc.maximize)
+		{
+			UpdateWindowSize();
+		}
+
 		/* Window Callbacks */
 		glfwSetWindowCloseCallback(_windowHandle, [](GLFWwindow* window) {
 			auto self = static_cast<Window*>(glfwGetWindowUserPointer(window));
@@ -57,13 +62,15 @@ namespace Athena
 
 			if (width == 0 && height == 0)
 			{
-				//TODO: WindowMinimizeEvent
+				WindowMinimizeEvent e;
+				self->DispatchEvent(e);
 				return;
 			}
 
 			if (width == self->GetWidth() && height == self->GetHeight())
 			{
-				//TODO: WindowRestoreEvent
+				WindowMaximizeEvent e;
+				self->DispatchEvent(e);
 				return;
 			}
 

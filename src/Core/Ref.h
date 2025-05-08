@@ -1,4 +1,6 @@
 #pragma once
+#include "Memory/MemoryTracker.h"
+
 #include <memory>
 
 namespace Athena
@@ -98,7 +100,9 @@ namespace Athena
 		template <typename... Args>
 		static Ref<T> Create(Args&&... args)
 		{
-			return Ref<T>(new T(std::forward<Args>(args)...));
+			T* ptr = new T(std::forward<Args>(args)...);
+			ATH_RECORD_MEMORY(ptr, sizeof(T), typeid(T).name());
+			return Ref<T>(ptr);
 		}
 
 		T* operator->() { return _instance; }
@@ -162,6 +166,7 @@ namespace Athena
 				_instance->DecreaseRef();
 				if (_instance->GetRefCount() == 0)
 				{
+					ATH_FREE_MEMORY(_instance);
 					delete _instance;
 					_instance = nullptr;
 				}

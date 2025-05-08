@@ -37,7 +37,7 @@ namespace Athena
         {
             for (int i = 0; i < _nodeNames.size(); ++i)
             {
-                ImGui::Text(_nodeNames[i].c_str());
+                ImGui::Text("%s", _nodeNames[i].c_str());
             }
             ImGui::TreePop();
         }
@@ -284,7 +284,7 @@ namespace Athena
 
             if (node.scale.size())
             {
-                glm::scale(glm::mat4(1.0f), glm::vec3(
+                scaleMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(
                     static_cast<float>(node.scale[0]),
                     static_cast<float>(node.scale[1]),
                     static_cast<float>(node.scale[2])
@@ -348,7 +348,7 @@ namespace Athena
         size_t byteLength = accessor.count * sizeof(float) * numPerVertex;
 
         std::vector<float> data(accessor.count * numPerVertex);
-        memcpy_s(data.data(), byteLength, &buffer.data[offset], byteLength);
+        memcpy(data.data(), &buffer.data[offset], byteLength);
 
         return data;
     }

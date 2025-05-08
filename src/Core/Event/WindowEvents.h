@@ -42,4 +42,22 @@ namespace Athena
 		uint32_t _width;
 		uint32_t _height;
 	};
+
+	class WindowMinimizeEvent : public Event
+	{
+	public:
+		WindowMinimizeEvent() {}
+		EVENT_CLASS_SET_TYPE(EventType::WindowMinimize)
+		EVENT_CLASS_SET_NAME("WindowMinimizeEvent")
+		EVENT_CLASS_SET_CATEGORY(EVENT_CATEGORY_APPLICATION)
+	};
+
+	class WindowMaximizeEvent : public Event
+	{
+	public:
+		WindowMaximizeEvent() {}
+		EVENT_CLASS_SET_TYPE(EventType::WindowMaximize)
+		EVENT_CLASS_SET_NAME("WindowMaximizeEvent")
+		EVENT_CLASS_SET_CATEGORY(EVENT_CATEGORY_APPLICATION)
+	};
 }

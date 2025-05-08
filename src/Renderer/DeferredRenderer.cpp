@@ -1,5 +1,6 @@
 #include "DeferredRenderer.h"
 #include "Core/Event/WindowEvents.h"
+#include "Core/Application.h"
 
 #include <glad/glad.h>
 #include <imgui.h>
@@ -100,8 +101,13 @@ namespace Athena
 
     void DeferredRenderer::Init()
     {
+        uint32_t windowWidth = Application::Instance().GetWindow()->GetWidth();
+        uint32_t windowHeight = Application::Instance().GetWindow()->GetHeight();
+
         FramebufferDescriptor gBufferDesc{};
         gBufferDesc.debugName = "G Buffer";
+        gBufferDesc.width = windowWidth;
+        gBufferDesc.height = windowHeight;
         gBufferDesc.attachments = {
             { FramebufferTextureFormat::RGBA16 },   // Position color buffer
             { FramebufferTextureFormat::RGBA16 },   // Normal color buffer
@@ -112,6 +118,8 @@ namespace Athena
 
         FramebufferDescriptor fbDesc{};
         fbDesc.debugName = "Screen Framebuffer";
+        fbDesc.width = windowWidth;
+        fbDesc.height = windowHeight;
         fbDesc.attachments = {
             { FramebufferTextureFormat::Color },
             { FramebufferTextureFormat::Depth }
@@ -175,9 +183,12 @@ namespace Athena
     void DeferredRenderer::BeginFrame(const Ref<EditorCamera>& camera)
     {
         // Setup camera UBO
-        _uniformBuffer->SetData(&camera->GetView(), sizeof(glm::mat4), 0);
-        _uniformBuffer->SetData(&camera->GetProjection(), sizeof(glm::mat4), sizeof(glm::mat4));
-        _uniformBuffer->SetData(&camera->GetPosition(), sizeof(glm::vec3), sizeof(glm::mat4) * 2);
+        const glm::mat4 viewMatrix = camera->GetView();
+        const glm::mat4 projMatrix = camera->GetProjection();
+        const glm::vec3 cameraPosition = camera->GetPosition();
+        _uniformBuffer->SetData(&viewMatrix, sizeof(glm::mat4), 0);
+        _uniformBuffer->SetData(&projMatrix, sizeof(glm::mat4), sizeof(glm::mat4));
+        _uniformBuffer->SetData(&cameraPosition, sizeof(glm::vec3), sizeof(glm::mat4) * 2);
 
         _viewMatrix = camera->GetView();
     }
@@ -196,7 +207,7 @@ namespace Athena
 
         // Geometry pass
         {
-            glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, "Geometry Pass");
+            glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 0, -1, _gBuffer->GetDescriptor().debugName.c_str());
             _gBuffer->Bind();
             glClearColor(_clearColor.x, _clearColor.y, _clearColor.z, _clearColor.w);
             glEnable(GL_DEPTH_TEST);
@@ -221,7 +232,7 @@ namespace Athena
 
         // Lighting pass
         {
-            glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 1, -1, "Lighting Pass");
+            glPushDebugGroup(GL_DEBUG_SOURCE_APPLICATION, 1, -1, _screenFramebuffer->GetDescriptor().debugName.c_str());
             //_screenFramebuffer->Bind();
             glBindFramebuffer(GL_FRAMEBUFFER, 0);
             glDisable(GL_DEPTH_TEST);
@@ -280,6 +291,7 @@ namespace Athena
             WindowResizeEvent& wre = (WindowResizeEvent&)e;
             _gBuffer->Resize(wre.GetWidth(), wre.GetHeight());
             _screenFramebuffer->Resize(wre.GetWidth(), wre.GetHeight());
+            glViewport(0, 0, wre.GetWidth(), wre.GetHeight());
         }
     }
 

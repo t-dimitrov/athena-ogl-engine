@@ -35,7 +35,7 @@ cmake ../
 - [x] Vertex buffers
 - [x] Index buffers
 - [x] 2D textures
-- [ ] Cubemaps
+- [x] Cubemaps
 - [x] Shaders
   - [x] Vertex shader
   - [x] Fragment shader

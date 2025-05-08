@@ -1,6 +1,7 @@
 #include "UniformBuffer.h"
 
 #include <glad/glad.h>
+#include <cstring>
 
 namespace Athena
 {

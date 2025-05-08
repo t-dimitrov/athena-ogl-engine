@@ -16,14 +16,14 @@ namespace Athena
             1600,
             900,
             false,
-            false,
+            true,
             true,
         };
         _window = Ref<Window>::Create(desc);
         _window->BindEventCallback(std::bind(&Application::OnEvent, this, std::placeholders::_1));
 
         _editorCamera = Ref<EditorCamera>::Create();
-        _editorCamera->SetPerspective(45.0f, static_cast<float>(desc.width), static_cast<float>(desc.height), 0.1f, 1000.0f);
+        _editorCamera->SetPerspective(45.0f, static_cast<float>(_window->GetWidth()), static_cast<float>(_window->GetHeight()), 0.1f, 1000.0f);
 
         _materialLibrary = Ref<MaterialLibrary>::Create();
         _materialLibrary->Init();
@@ -80,6 +80,16 @@ namespace Athena
             }
         }
 
+        if (e.GetEventType() == EventType::WindowMinimize)
+        {
+            LOG_DEBUG("Minimized");
+        }
+
+        if (e.GetEventType() == EventType::WindowMaximize)
+        {
+            LOG_DEBUG("Maximized");
+        }
+
         _editorCamera->OnEvent(e);
         _renderer->OnEvent(e);
     }
@@ -87,7 +97,16 @@ namespace Athena
     void Application::OnImGuiRender()
     {
         ImGui::Begin("Application");
-        if (ImGui::TreeNodeEx("Materials", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Selected))
+        if (ImGui::TreeNodeEx("Memory", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Selected))
+        {
+            if (ImGui::Button("Dump Memory"))
+            {
+                MemoryTracker::DumpReport();
+            }
+            ImGui::TreePop();
+        }
+
+        if (ImGui::TreeNodeEx("Materials", ImGuiTreeNodeFlags_Selected))
         {
             auto& lib = MaterialLibrary::Instance();
             const auto& materials = lib.GetAllMaterials();

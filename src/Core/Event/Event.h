@@ -6,7 +6,7 @@ namespace Athena
 	enum class EventType
 	{
 		None = 0,
-		WindowClose, WindowResize, // Application
+		WindowClose, WindowResize, WindowMinimize, WindowMaximize, // Application
 		KeyPress, KeyRelease, KeyType, // Input, Keyboard
 		MouseButtonPress, MouseButtonRelease, MouseMove, MouseScroll // Input, Mouse
 	};
